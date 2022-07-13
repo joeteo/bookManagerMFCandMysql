@@ -10,7 +10,7 @@ CMysqlController::~CMysqlController()
 	
 }
 
-bool CMysqlController::SelectQuery(char* sql, CString& result)
+bool CMysqlController::SelectQuery(char* sql, vector<Datarow*>& row)
 {
 	MYSQL* connection = NULL, conn;
 	MYSQL_RES* sql_result;
@@ -37,14 +37,18 @@ bool CMysqlController::SelectQuery(char* sql, CString& result)
 		fprintf(stderr, "Mysql query error : %s", mysql_error(&conn));
 		return false;
 	}
+		
 
 	sql_result = mysql_store_result(connection);
 	while((sql_row = mysql_fetch_row(sql_result)) != NULL)
 	{
-		CString	tmp;
-		tmp.Format(_T("%s, %s, %s, %s, %s\n"), sql_row[0], (LPSTR)(sql_row[1]),
-			(LPSTR)(sql_row[2]), (LPSTR)sql_row[3], (LPSTR)sql_row[4]);
-		result += tmp;
+		row.push_back(new Datarow(sql_row[0], (LPSTR)(sql_row[1]),
+			(LPSTR)(sql_row[2]), (LPSTR)sql_row[3], (LPSTR)sql_row[4]));
+		
+		//CString	tmp;
+		//tmp.Format(_T("%s, %s, %s, %s, %s\n"), sql_row[0], (LPSTR)(sql_row[1]),
+		//	(LPSTR)(sql_row[2]), (LPSTR)sql_row[3], (LPSTR)sql_row[4]);
+		//result += tmp;
 	}
 	mysql_free_result(sql_result);
 

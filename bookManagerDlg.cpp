@@ -76,6 +76,8 @@ BEGIN_MESSAGE_MAP(CbookManagerDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTONADD, &CbookManagerDlg::OnBnClickedButtonadd)
 	ON_BN_CLICKED(IDC_BUTTONRENEW, &CbookManagerDlg::OnBnClickedButtonrenew)
+
+	ON_BN_CLICKED(IDC_BUTTONDELETE, &CbookManagerDlg::OnBnClickedButtondelete)
 END_MESSAGE_MAP()
 
 
@@ -119,6 +121,14 @@ BOOL CbookManagerDlg::OnInitDialog()
 	m_list.InsertColumn(2, _T("저자"), LVCFMT_CENTER, 100);
 	m_list.InsertColumn(3, _T("가격"), LVCFMT_CENTER, 100);
 	m_list.InsertColumn(4, _T("기타"), LVCFMT_CENTER, 100);
+
+	CFont font;
+	LOGFONT logfont;
+	::ZeroMemory(&logfont, sizeof(logfont));
+	logfont.lfHeight = 22;
+	font.CreateFontIndirect(&logfont);
+	GetDlgItem(IDC_STATICTITLE)->SetFont(&font);;
+	font.Detach();
 
 
 
@@ -188,38 +198,52 @@ void CbookManagerDlg::OnBnClickedButtonadd()
 
 void CbookManagerDlg::OnBnClickedButtonrenew()
 {
+	RenewListControl();
+}
+
+void CbookManagerDlg::RenewListControl()
+{
 	CMysqlController conn;
-	CString result;
+	//CString result;
+	vector<Datarow*> row;
 
 	m_list.DeleteAllItems();
 
-	if (conn.SelectQuery("select * from TB_Book", result) == true)
+	if (conn.SelectQuery("select * from TB_Book", row) == true)
 	{
 
 	}
-
-	string str = CT2CA(result);
-	istringstream ss(str);
-	string line;
-	int i = 0;
-	while(getline(ss, line, '\n'))
+	for (size_t i = 0; i < row.size(); i++)
 	{
-		istringstream linestream(line);
-		string cell;
+		m_list.InsertItem(i, row.at(i)->getID());
+		m_list.SetItem(i, 1, LVIF_TEXT, row.at(i)->getBookname(), NULL, NULL, NULL, NULL);
+		m_list.SetItem(i, 2, LVIF_TEXT, row.at(i)->getAuthor(), NULL, NULL, NULL, NULL);
+		m_list.SetItem(i, 3, LVIF_TEXT, row.at(i)->getPrice(), NULL, NULL, NULL, NULL);
+		m_list.SetItem(i, 4, LVIF_TEXT, row.at(i)->getOther(), NULL, NULL, NULL, NULL);
 
-		getline(linestream, cell, ',');
-		m_list.InsertItem(i, cell.c_str());
-		getline(linestream, cell, ',');
-		m_list.SetItem(i, 1, LVIF_TEXT, cell.c_str(), NULL, NULL, NULL, NULL);
-		getline(linestream, cell, ',');
-		m_list.SetItem(i, 2, LVIF_TEXT, cell.c_str(), NULL, NULL, NULL, NULL);
-		getline(linestream, cell, ',');
-		m_list.SetItem(i, 3, LVIF_TEXT, cell.c_str(), NULL, NULL, NULL, NULL);
-		getline(linestream, cell, ',');
-		m_list.SetItem(i, 4, LVIF_TEXT, cell.c_str(), NULL, NULL, NULL, NULL);
+	}
 
-		i++;
-	}	
+	//string str = CT2CA(result);
+	//istringstream ss(str);
+	//string line;
+	//int i = 0;
+	//while(getline(ss, line, '\n'))
+	//{
+	//	istringstream linestream(line);
+	//	string cell;
+
+	//	getline(linestream, cell, ',');
+	//	m_list.InsertItem(i, cell.c_str());
+
+	//	int j = 0;
+	//	while (getline(linestream, cell, ','))
+	//	{
+	//		m_list.SetItem(i, j, LVIF_TEXT, cell.c_str(), NULL, NULL, NULL, NULL);
+	//		j++;
+	//	}
+	//	
+	//	i++;
+	//}	
 
 	//int lineCount;
 	//lineCount = result.Replace('\n',',');
@@ -240,5 +264,44 @@ void CbookManagerDlg::OnBnClickedButtonrenew()
 	//	m_list.SetItem(i, 4, LVIF_TEXT, tmpOther, NULL, NULL, NULL, NULL);
 	//}
 
+	//UpdateData(false);
+
+	for (size_t i = 0; i < row.size(); i++)
+	{
+		delete row.at(i);
+	}
+
+}
+
+
+
+
+
+void CbookManagerDlg::OnBnClickedButtondelete()
+{
+
+	UpdateData(true);
+
+	int clickindex = m_list.GetSelectionMark();
+	CMysqlController conn;
+	CString temp;
+
+	temp = _T("delete from TB_Book where id=");
+
+	CString idNum = m_list.GetItemText(clickindex, 0);
+	temp += idNum;
+
+	if (conn.InsertQuery(LPSTR(LPCTSTR(temp))) == true)
+	{
+		AfxMessageBox(_T("성공"));
+
+		RenewListControl();
+	}
+	else
+	{
+		AfxMessageBox(_T(" 실패"));
+	}
+
 	UpdateData(false);
+
 }

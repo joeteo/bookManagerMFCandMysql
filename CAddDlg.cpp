@@ -93,6 +93,7 @@ void CAddDlg::OnBnClickedButton2()
 	{
 		AfxMessageBox(_T(" 실패"));
 	}
-
-	UpdateData(false);
+	
+	dlgPtr->RenewListControl();
+	EndDialog(IDCANCEL);
 }

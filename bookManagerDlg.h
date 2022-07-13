@@ -4,7 +4,7 @@
 
 #pragma once
 #include <xstring>
-
+#include "Datarow.h"
 
 // CbookManagerDlg 대화 상자
 class CbookManagerDlg : public CDialogEx
@@ -35,6 +35,7 @@ protected:
 public:
 	afx_msg void OnBnClickedButtonadd();
 	CListCtrl m_list;
-	
-void OnBnClickedButtonrenew();
+	void OnBnClickedButtonrenew();
+	afx_msg void OnBnClickedButtondelete();
+	void RenewListControl();
 };

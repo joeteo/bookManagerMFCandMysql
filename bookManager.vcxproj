@@ -190,6 +190,7 @@
     <ClInclude Include="bookManagerDlg.h" />
     <ClInclude Include="CAddDlg.h" />
     <ClInclude Include="CMysqlController.h" />
+    <ClInclude Include="Datarow.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
@@ -200,6 +201,7 @@
     <ClCompile Include="bookManagerDlg.cpp" />
     <ClCompile Include="CAddDlg.cpp" />
     <ClCompile Include="CMysqlController.cpp" />
+    <ClCompile Include="Datarow.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
